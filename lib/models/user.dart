@@ -13,11 +13,11 @@ class User {
   String phone;
   String email;
   String address;
-  String password;
-  String passwordConfirm;
-  Role role;
-  Gender gender;
-  ByteBuffer image;
+  String? password;
+  String? passwordConfirm;
+  Role? role;
+  Gender? gender;
+  ByteBuffer? image;
   String fullName;
 
   User(

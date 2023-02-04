@@ -8,14 +8,16 @@ import 'baseServiceMixin.dart';
 class BaseProvider<T> extends ChangeNotifier with BaseServiceMixin<T> {
   static final String? _url = dotenv.env["API_URL"];
   final String _apiName;
-  static final _headers = <String, String>{'content-type': 'application/json'};
+  static Map<String, String> headers = <String, String>{
+    'content-type': 'application/json'
+  };
   BaseProvider(this._apiName);
-  Uri uri = Uri.base; // not good practice
+  Uri uri = Uri.base;
   @override
   Future<T> create(request, {path = ''}) async {
     uri = Uri.parse('$_url/$_apiName$path');
     final result = await http.post(uri,
-        headers: _headers, body: JsonMapper.serialize(request));
+        headers: headers, body: JsonMapper.serialize(request));
     notifyListeners();
     return result as T;
   }

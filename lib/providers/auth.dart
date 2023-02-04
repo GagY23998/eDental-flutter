@@ -9,9 +9,11 @@ class Auth extends ChangeNotifier {
   User? user;
   bool get isAuthenticated => user != null;
 
-  Future<UserLogin> authenticate(String userName, String password) async {
+  Future<void> authenticate(String userName, String password) async {
     UserLogin userLogin = UserLogin(userName, password);
-    return authService.Login(userLogin);
+    User? loggedUser = await authService.Login(userLogin);
+    user = loggedUser;
+    notifyListeners();
   }
 
   Future<void> signUp(

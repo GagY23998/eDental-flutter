@@ -6,33 +6,31 @@ import 'package:dart_json_mapper/dart_json_mapper.dart';
 
 @jsonSerializable
 class User {
-  int id;
+  int? id;
   String firstName;
   String lastName;
   String username;
-  String phone;
+  String? phone;
   String email;
-  String address;
+  String? address;
   String? password;
   String? passwordConfirm;
   Role? role;
   Gender? gender;
   ByteBuffer? image;
-  String fullName;
+  String get fullName => '$firstName $lastName';
 
-  User(
-    this.id,
-    this.firstName,
-    this.lastName,
-    this.username,
+  User({
+    this.firstName = '',
+    this.lastName = '',
+    this.username = '',
     this.phone,
-    this.email,
+    this.email = '',
     this.address,
     this.password,
     this.passwordConfirm,
     this.role,
     this.gender,
     this.image,
-    this.fullName,
-  );
+  });
 }

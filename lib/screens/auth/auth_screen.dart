@@ -46,8 +46,9 @@ class AuthLogin extends StatefulWidget {
 }
 
 class _AuthLoginState extends State<AuthLogin> {
-  final TextEditingController _username = TextEditingController(text: 'gagi');
-  final TextEditingController _password = TextEditingController(text: 'gigi');
+  final TextEditingController _username = TextEditingController(text: 'admin');
+  final TextEditingController _password =
+      TextEditingController(text: 'Admin1234!');
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

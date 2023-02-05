@@ -16,10 +16,21 @@ class Auth extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signUp(
-      String userName, String password, String confirmPassword) async {
+  Future<void> signUp(String firstName, String lastName, String userName,
+      String emailAddress, String password, String confirmPassword) async {
     if (password != confirmPassword) {
-      // show message
+      return;
+    }
+    User newUser = User();
+    newUser.firstName = firstName;
+    newUser.lastName = lastName;
+    newUser.username = userName;
+    newUser.password = password;
+    newUser.passwordConfirm = confirmPassword;
+    newUser.email = emailAddress;
+    User? confirmedUser = await authService.Register(newUser);
+    if (confirmedUser != null) {
+      await authenticate(confirmedUser.username, confirmedUser.password ?? '');
     }
     notifyListeners();
   }

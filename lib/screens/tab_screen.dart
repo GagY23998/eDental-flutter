@@ -36,7 +36,7 @@ class _TabScreenState extends State<TabScreen> {
               label: 'Home',
               icon: Icon(Icons.home)),
           const BottomNavigationBarItem(
-              label: 'Schedule', icon: Icon(Icons.attribution_rounded)),
+              label: 'Schedule', icon: Icon(Icons.schedule)),
           const BottomNavigationBarItem(
               label: 'Settings', icon: Icon(Icons.settings)),
         ],

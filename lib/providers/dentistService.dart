@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../models/dentist.dart';
 
-class DentistService extends BaseProvider<Dentist> {
-  DentistService({apiName = 'dentist'}) : super(apiName);
+class DentistService extends BaseProvider<Dentist, Object> {
+  DentistService({apiName = 'dentists', username = '', password = ''})
+      : super(apiName, username, password);
 }

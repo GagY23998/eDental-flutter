@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:edental/helpers/navigation_routes.dart';
+import 'package:edental/providers/appointmentProvider.dart';
 import 'package:edental/providers/auth.dart';
+import 'package:edental/providers/dentist.dart';
 import 'package:edental/screens/auth/auth_screen.dart';
 import 'package:edental/screens/tab_screen.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +39,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [ChangeNotifierProvider.value(value: Auth())],
+        providers: [
+          ChangeNotifierProvider.value(value: Auth()),
+          ChangeNotifierProvider.value(value: DentistProvider()),
+          ChangeNotifierProxyProvider<Auth, AppointmentProvider>(
+            create: (context) => AppointmentProvider(null, '', ''),
+            update: (context, value, previous) => AppointmentProvider(
+                value.user?.id, value.user?.username, value.user?.password),
+          )
+        ],
         child: Consumer<Auth>(
             builder: ((context, value, child) => MaterialApp(
                 home: value.isAuthenticated

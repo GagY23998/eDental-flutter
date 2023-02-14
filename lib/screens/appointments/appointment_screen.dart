@@ -17,7 +17,7 @@ class AppointmentScreen extends StatefulWidget {
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
   final List<String> weekDays = [
-    'Monday',
+    'Mon',
     'Tue',
     'Wed',
     'Thu',
@@ -25,22 +25,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     'Sat',
     'Sun'
   ];
-  // List<String> getListOfWeekDays(DateTime first, DateTime last){
-  //   List<String> list = [];
-  //   DateTime tempDate = first;
-  //   int index = first.day;
 
-  //   while(index++<=last.day){
-  //     list.add(DateFormat('EEEE').format(tempDate));
-  //     tempDate = tempDate.add(const Duration(days: 1));
-  //   }
-  //   return list;
-  // FutureBuilder<List<Dentist>>(
-  //   future:  dentists.getDentistDropdown(),
-  //   builder: (context, snapshot){
-  //   })
-
-  // }
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future pickDateRange(
       DateTimeRange? initialDateRange, DateTime firstDate) async {
@@ -49,75 +35,96 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         initialDateRange: initialDateRange,
         firstDate: firstDate,
         lastDate: DateTime(DateTime.now().year, 12, 31));
-    if (dateRange != null && dateRange.duration.inDays < 7) return;
+    if (dateRange != null && dateRange.duration.inDays != 6) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 5),
+          content: Text('Range has to be a week')));
+      return;
+    }
+    if (dateRange?.start.weekday != 1 && dateRange?.end.weekday != 7) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          duration: Duration(seconds: 5),
+          content: Text('Please choose dates between monday and sunday')));
+      return;
+    }
+
     return dateRange;
   }
 
   @override
   Widget build(BuildContext context) {
-    final appointments = Provider.of<AppointmentProvider>(context);
+    // final appointments = Provider.of<AppointmentProvider>(context);
     final dentists = Provider.of<DentistProvider>(context, listen: false);
     final dentistList = dentists.getDentists();
     final deviceSize = MediaQuery.of(context).size;
-    DateTime firstDate = appointments.firstDayOfWeek;
-    DateTime lastDate = appointments.lastDayOfWeek;
     return Scaffold(
+        key: _scaffoldKey,
         body: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          child: Column(children: [
-            Row(children: [
-              // DropdownButtonHideUnderline(
-              //   child: FutureBuilder<List<Dentist>>(
-              //     future: dentists.getDentistsAsync(),
-              //     builder: (context, snapshot) {
-              //       return DropdownButton(
-              //           items: dentists.getDentistsDropdown(),
-              //           onChanged: (val) {
-              //             appointments.setDentistAppointments(dentistList
-              //                 .firstWhere((element) => element.fullName == val)
-              //                 .id);
-              //           });
-              //     },
-              //   ),
-              // ),
-              ElevatedButton(
-                  onPressed: () => pickDateRange(
-                      appointments.weekRange, appointments.firstDayOfWeek),
-                  child: Text(
-                      '${DateFormat('dd.mm.yyyy').format(firstDate)}-${DateFormat('dd.mm.yyyy').format(lastDate)}'))
-            ]),
-            SizedBox(
-              height: deviceSize.height / 2,
-              width: deviceSize.width,
-              child: ListView.builder(
-                  itemBuilder: (context, index) => Text(weekDays[index]),
-                  itemCount: 7),
-            ),
-            FutureBuilder(
-              future: appointments.initializeValues(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Row(
-                    children: [
-                      Column(children: [const Text('gagi test')]),
-                      Column(children: [const Text('gagi test')]),
-                      Column(children: [const Text('gagi test')]),
-                      Column(children: [const Text('gagi test')]),
-                      Column(children: [const Text('gagi test')]),
-                      Column(children: [const Text('gagi test')]),
-                      Column(children: [const Text('gagi test')]),
-                    ],
-                  );
-                }
-                return const CircularProgressIndicator();
-              },
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Consumer<AppointmentProvider>(
+              builder: (context, appointments, child) => Container(
+                child: Column(children: [
+                  Row(children: [
+                    DropdownButtonHideUnderline(
+                      child: FutureBuilder<List<Dentist>>(
+                        future: dentists.getDentistsAsync(),
+                        builder: (context, snapshot) {
+                          return DropdownButton(
+                              items: dentists.getDentistsDropdown(),
+                              onChanged: (val) {
+                                appointments.setDentistAppointments(dentistList
+                                    .firstWhere(
+                                        (element) => element.fullName == val)
+                                    .id);
+                              });
+                        },
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () =>
+                          pickDateRange(appointments.weekRange, DateTime.now())
+                              .then((value) {
+                        if (value != null) {
+                          appointments.setWeekDaysFromRange(value);
+                        }
+                      }),
+                      child: Consumer<AppointmentProvider>(
+                        builder: (context, value, child) => Text(
+                            '${DateFormat('dd.MM.yyyy').format(value.firstDayOfWeek)}-${DateFormat('dd.MM.yyyy').format(value.lastDayOfWeek)}'),
+                      ),
+                    )
+                  ]),
+                  SizedBox(
+                      height: deviceSize.height / 8,
+                      width: deviceSize.width,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: weekDays.map((e) => Text(e)).toList())),
+                  FutureBuilder(
+                    future: appointments.calculateAppointmentsForWeek(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List<Widget>? appointments =
+                            snapshot.data?.entries.map((e) {
+                          return Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: e.value);
+                        }).toList();
+                        return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: appointments ?? []);
+                      }
+                      return const CircularProgressIndicator();
+                    },
+                  )
+                ]),
+              ),
             )
-          ]),
-        )
-      ],
-    ));
+          ],
+        ));
   }
 }

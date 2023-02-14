@@ -32,11 +32,11 @@ class _TabScreenState extends State<TabScreen> {
         // ignore: prefer_const_literals_to_create_immutables
         items: [
           const BottomNavigationBarItem(
-              backgroundColor: Colors.amberAccent,
+              backgroundColor: Colors.cyan,
               label: 'Home',
               icon: Icon(Icons.home)),
           const BottomNavigationBarItem(
-              label: 'Schedule', icon: Icon(Icons.attribution_rounded)),
+              label: 'Schedule', icon: Icon(Icons.schedule)),
           const BottomNavigationBarItem(
               label: 'Settings', icon: Icon(Icons.settings)),
         ],

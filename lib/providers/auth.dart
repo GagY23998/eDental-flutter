@@ -8,11 +8,11 @@ class Auth extends ChangeNotifier {
   AuthService authService = AuthService();
   User? user;
   bool get isAuthenticated => user != null;
-
   Future<void> authenticate(String userName, String password) async {
     UserLogin userLogin = UserLogin(userName, password);
     User? loggedUser = await authService.Login(userLogin);
     user = loggedUser;
+    user?.password = password;
     notifyListeners();
   }
 

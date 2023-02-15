@@ -1,4 +1,4 @@
-import 'package:edental/screens/account/account_screen.dart';
+import 'package:edental/screens/settings/screens/settings_screen.dart';
 import 'package:edental/screens/appointments/appointment_screen.dart';
 import 'package:edental/screens/treatment/treatments_screen.dart';
 import 'package:flutter/material.dart';

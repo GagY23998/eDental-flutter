@@ -8,24 +8,26 @@ import 'package:http/http.dart';
 import '../../models/user.dart';
 import 'baseProvider.dart';
 
-class AuthService extends BaseProvider<UserLogin> {
-  AuthService({apiName = 'auth'}) : super(apiName);
+class AuthService extends BaseProvider<UserLogin, Object> {
+  AuthService({apiName = 'auth', username = '', password = ''})
+      : super(apiName, username, password);
 
   Future<User?> Login(UserLogin userLogin) async {
     String? apiUrl = dotenv.env['API_URL'];
     Response res = await http.post(Uri.parse('$apiUrl/auth/login'),
-        headers: BaseProvider.headers, body: JsonMapper.serialize(userLogin));
+        headers: super.headers, body: JsonMapper.serialize(userLogin));
     return JsonMapper.deserialize<User>(res.body);
   }
 
   Future<User?> Register(User userLogin) async {
     String? apiUrl = dotenv.env['API_URL'];
     Response res = await http.post(Uri.parse('$apiUrl/auth/register'),
-        headers: BaseProvider.headers, body: JsonMapper.serialize(userLogin));
+        headers: super.headers, body: JsonMapper.serialize(userLogin));
     return JsonMapper.deserialize<User>(res.body);
   }
 }
 
-class UserService extends BaseProvider<User> {
-  UserService({apiName = 'user'}) : super(apiName);
+class UserService extends BaseProvider<User, Object> {
+  UserService({apiName = 'user', username = '', password = ''})
+      : super(apiName, username, password);
 }

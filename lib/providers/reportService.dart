@@ -1,6 +1,7 @@
 import 'package:edental/providers/baseProvider.dart';
 import '../../models/report.dart';
 
-class ReportService extends BaseProvider<Report> {
-  ReportService({apiName = 'report'}) : super(apiName);
+class ReportService extends BaseProvider<Report, Object> {
+  ReportService({apiName = 'report', username = '', password = ''})
+      : super(apiName, username, password);
 }

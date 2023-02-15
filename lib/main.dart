@@ -26,8 +26,8 @@ class MyHttpOverrides extends HttpOverrides {
 
 Future<void> main() async {
   await dotenv.load();
-  HttpOverrides.global =
-      MyHttpOverrides(); // if using flutter in web, comment this line
+  // HttpOverrides.global =
+  // MyHttpOverrides(); // if using flutter in web, comment this line
   initializeJsonMapper();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());

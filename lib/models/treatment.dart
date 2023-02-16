@@ -7,7 +7,7 @@ class Treatment {
   String name;
   double price;
   int timeRequiredInMinutes;
-  ByteBuffer image;
+  ByteBuffer? image;
 
   Treatment(
     this.id,

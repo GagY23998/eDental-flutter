@@ -5,7 +5,7 @@ class CustomDateTimeConverter implements ICustomConverter<DateTime> {
 
   @override
   DateTime fromJSON(dynamic jsonValue, DeserializationContext context) {
-    return jsonValue;
+    return DateTime.parse(jsonValue);
   }
 
   @override

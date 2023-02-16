@@ -40,6 +40,20 @@ class AppointmentProvider extends ChangeNotifier {
     return appointments;
   }
 
+  Future<Appointment> createAppointment(Appointment? newAppointment) async {
+    if (newAppointment != null) {
+      final result = await appointmentService.create(newAppointment);
+      if (result != null) {
+        _appointments.add(result);
+        notifyListeners();
+      }
+
+      return result;
+    }
+    // ignore: null_argument_to_non_null_type
+    return Future.value(null);
+  }
+
   AppointmentProvider update(int userId, String userName, String password) {
     userId = userId;
     appointmentService =

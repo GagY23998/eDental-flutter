@@ -34,6 +34,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         context: context,
         initialDateRange: initialDateRange,
         firstDate: firstDate,
+        cancelText: 'Close',
         lastDate: DateTime(DateTime.now().year, 12, 31));
     if (dateRange != null && dateRange.duration.inDays != 6) {
       // ignore: use_build_context_synchronously
@@ -85,9 +86,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () =>
-                          pickDateRange(appointments.weekRange, DateTime.now())
-                              .then((value) {
+                      onPressed: () => pickDateRange(
+                              appointments.weekRange,
+                              DateTime.now().add(
+                                  Duration(days: DateTime.now().weekday - 1)))
+                          .then((value) {
                         if (value != null) {
                           appointments.setWeekDaysFromRange(value);
                         }

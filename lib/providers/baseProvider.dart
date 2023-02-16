@@ -31,8 +31,11 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
     uri = Uri.parse('$_url/$_apiName$path');
     final result = await http.post(uri,
         headers: headers, body: JsonMapper.serialize(request));
-    notifyListeners();
-    return result as T;
+    final deserializedResult = JsonMapper.deserialize<T>(result.body);
+    if (deserializedResult == null) {
+      throw Exception('result was null');
+    }
+    return deserializedResult;
   }
 
   @override
@@ -41,7 +44,6 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
     final result = await http
         .delete(uri, headers: headers)
         .then((value) => JsonMapper.deserialize<bool>(value.body));
-    notifyListeners();
     return result;
   }
 
@@ -51,7 +53,6 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
     final result = await http
         .post(uri, headers: headers, body: searchRequest)
         .then((value) => value.body as List<T>);
-    notifyListeners();
     return result;
   }
 
@@ -60,7 +61,6 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
     uri = Uri.parse('$_url/$_apiName');
     final result = await http.get(uri, headers: headers);
     final deserializedResult = JsonMapper.deserialize<List<T>>(result.body);
-    notifyListeners();
     return deserializedResult ?? [];
   }
 
@@ -70,7 +70,6 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
     final result = await http
         .post(uri, headers: headers)
         .then((value) => JsonMapper.deserialize(value.body) as T);
-    notifyListeners();
     return result;
   }
 

@@ -11,7 +11,8 @@ class DentistProvider extends ChangeNotifier {
 
   final DentistService dentistService = DentistService();
 
-  Future<List<Dentist>> getDentistsAsync() async => dentistService.getAll();
+  Future<List<Dentist>> getDentistsAsync() async =>
+      _dentist.isEmpty ? dentistService.getAll() : Future.value(dentists);
   List<Dentist> getDentists() {
     dentistService.getAll().then((val) {
       _dentist = val;

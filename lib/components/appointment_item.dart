@@ -15,10 +15,14 @@ class AppointmentItem extends StatefulWidget {
       appointment != null &&
       appointment?.start != null &&
       appointment?.end != null &&
-      ((appointment!.start.isBefore(appointmentHour) ||
-              appointment!.start.isAtSameMomentAs(appointmentHour)) &&
+      // (
+      // (appointment!.start.isBefore(appointmentHour) ||
+      appointment!.start.isAtSameMomentAs(appointmentHour)
+      // )
+      /* &&
           (appointment!.end.isAfter(appointmentHour) ||
-              appointment!.end.isAtSameMomentAs(appointmentHour)));
+              appointment!.end.isAtSameMomentAs(appointmentHour)))*/
+      ;
   @override
   State<AppointmentItem> createState() => _AppointmentItemState();
 }
@@ -26,18 +30,24 @@ class AppointmentItem extends StatefulWidget {
 class _AppointmentItemState extends State<AppointmentItem> {
   @override
   Widget build(BuildContext context) {
+    // final deviceSize = MediaQuery.of(context).size;
     return SizedBox(
-      height: 20,
-      width: 35,
-      child: ElevatedButton(
+      height: 30,
+      width: 55,
+      child: TextButton(
+        style: ButtonStyle(
+            padding: MaterialStateProperty.resolveWith(
+                (states) => const EdgeInsets.all(0))),
         onPressed: () => showDialog(
           context: context,
-          builder: (context) =>
-              AppointmentDetail(widget), //hendlirati kad je reserved
-          // da samo prikaze a kad nije da prebaci na rezervaciju
+          builder: (context) => FractionallySizedBox(
+              heightFactor: 0.7,
+              widthFactor: 1,
+              child: AppointmentDetail(widget)),
         ),
         child: Text(
             style: TextStyle(
+                color: Colors.white,
                 backgroundColor:
                     widget.IsReserved ? Colors.red : Colors.green[600]),
             DateFormat('H:mm').format(widget.appointmentHour)),

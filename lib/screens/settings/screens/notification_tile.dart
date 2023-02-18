@@ -28,7 +28,7 @@ class _NotificationTileState extends State<NotificationTile> {
           },
         ),
         title: Text(
-          'Obavještenja',
+          'Notifications',
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -38,7 +38,7 @@ class _NotificationTileState extends State<NotificationTile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 16.0),
-            Text('Push obavještenja', style: TextStyle(fontSize: 20.0)),
+            Text('Push notifications', style: TextStyle(fontSize: 20.0)),
             SizedBox(height: 8.0),
             SwitchListTile(
               title: Text('Uključeno'),
@@ -50,11 +50,11 @@ class _NotificationTileState extends State<NotificationTile> {
               },
             ),
             SizedBox(height: 16.0),
-            Text('Pretplati se na newsletter',
+            Text('Subscribe to our newsletter',
                 style: TextStyle(fontSize: 20.0)),
             SizedBox(height: 8.0),
             SwitchListTile(
-              title: Text('Uključeno'),
+              title: Text('On'),
               value: _newsletterEnabled,
               onChanged: (value) {
                 setState(() {
@@ -63,10 +63,10 @@ class _NotificationTileState extends State<NotificationTile> {
               },
             ),
             SizedBox(height: 16.0),
-            Text('Tema', style: TextStyle(fontSize: 20.0)),
+            Text('Theme', style: TextStyle(fontSize: 20.0)),
             SizedBox(height: 8.0),
             SwitchListTile(
-              title: Text('Noćni mod'),
+              title: Text('Dark mode'),
               value: _darkThemeEnabled,
               onChanged: (value) {
                 setState(() {
@@ -78,7 +78,6 @@ class _NotificationTileState extends State<NotificationTile> {
                     home: TabScreen(),
                   );
                 } else {
-                  // Set the app's theme to light
                   MaterialApp(
                     theme: ThemeData.light(),
                     home: TabScreen(),

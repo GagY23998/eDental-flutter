@@ -53,9 +53,26 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
     final appointments = Provider.of<AppointmentProvider>(context);
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          color: Colors.black,
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          'Appointment details',
+          style: TextStyle(color: Colors.black),
+        ),
+      ),
       body: Center(
         child: Form(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Center(
                 child: TextFormField(

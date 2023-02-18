@@ -61,6 +61,15 @@ class _AuthLoginState extends State<AuthLogin> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Container(
+                height: 160,
+                width: 160,
+                child: Image.asset(
+                  'images/eDental.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 30),
               TextFormField(
                 controller: _username,
               ),

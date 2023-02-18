@@ -70,7 +70,9 @@ flutter:
     - .env
     - images/eDental.png
     - images/dummy.png
-  #   - images/a_dot_ham.jpeg
+    - images/overview.png
+    - images/ourmission.png
+    - images/mission.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -57,7 +57,7 @@ class _AccountScreenState extends State<AccountScreen> {
               title: 'Obavijesti',
               icon: Icons.notifications,
               destination: NotificationTile()),
-          const SettingsTile(
+          SettingsTile(
               title: 'Pomoć', icon: Icons.book, destination: HelpTile()),
           const SettingsTile(
               title: 'O nama', icon: Icons.book, destination: AboutTile()),

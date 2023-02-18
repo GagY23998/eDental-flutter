@@ -62,6 +62,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
         key: _scaffoldKey,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          title: Text(
+            'Schedule an apointment',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,38 +77,50 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             Consumer<AppointmentProvider>(
               builder: (context, appointments, child) => Container(
                 child: Column(children: [
-                  Row(children: [
-                    DropdownButtonHideUnderline(
-                      child: FutureBuilder<List<Dentist>>(
-                        future: dentists.getDentistsAsync(),
-                        builder: (context, snapshot) {
-                          return DropdownButton(
-                              items: dentists.getDentistsDropdown(),
-                              onChanged: (val) {
-                                appointments.setDentistAppointments(dentistList
-                                    .firstWhere(
-                                        (element) => element.fullName == val)
-                                    .id);
-                              });
-                        },
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => pickDateRange(
-                              appointments.weekRange,
-                              DateTime.now().add(
-                                  Duration(days: DateTime.now().weekday - 1)))
-                          .then((value) {
-                        if (value != null) {
-                          appointments.setWeekDaysFromRange(value);
-                        }
-                      }),
-                      child: Consumer<AppointmentProvider>(
-                        builder: (context, value, child) => Text(
-                            '${DateFormat('dd.MM.yyyy').format(value.firstDayOfWeek)}-${DateFormat('dd.MM.yyyy').format(value.lastDayOfWeek)}'),
-                      ),
-                    )
-                  ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        DropdownButtonHideUnderline(
+                          child: FutureBuilder<List<Dentist>>(
+                            future: dentists.getDentistsAsync(),
+                            builder: (context, snapshot) {
+                              return DropdownButton(
+                                  itemHeight: null,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  hint: Text(
+                                    'Choose doctor',
+                                    style: TextStyle(
+                                        color: Colors.grey[850],
+                                        fontSize: 14.0),
+                                  ),
+                                  icon: Icon(Icons.keyboard_arrow_down),
+                                  items: dentists.getDentistsDropdown(),
+                                  onChanged: (val) {
+                                    appointments.setDentistAppointments(
+                                        dentistList
+                                            .firstWhere((element) =>
+                                                element.fullName == val)
+                                            .id);
+                                  });
+                            },
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => pickDateRange(
+                                  appointments.weekRange,
+                                  DateTime.now().add(Duration(
+                                      days: DateTime.now().weekday - 1)))
+                              .then((value) {
+                            if (value != null) {
+                              appointments.setWeekDaysFromRange(value);
+                            }
+                          }),
+                          child: Consumer<AppointmentProvider>(
+                            builder: (context, value, child) => Text(
+                                '${DateFormat('dd.MM.yyyy').format(value.firstDayOfWeek)}-${DateFormat('dd.MM.yyyy').format(value.lastDayOfWeek)}'),
+                          ),
+                        )
+                      ]),
                   SizedBox(
                       height: deviceSize.height / 8,
                       width: deviceSize.width,

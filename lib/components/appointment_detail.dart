@@ -54,10 +54,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         leading: IconButton(
-          color: Colors.black,
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
@@ -65,7 +62,6 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
         ),
         title: Text(
           'Appointment details',
-          style: TextStyle(color: Colors.black),
         ),
       ),
       body: Center(

@@ -29,18 +29,14 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          color: Colors.black,
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: Text(
           'Settings',
-          style: TextStyle(color: Colors.black),
         ),
       ),
       body: Column(
@@ -48,23 +44,21 @@ class _AccountScreenState extends State<AccountScreen> {
         children: [
           const UneditableProfilePhoto(),
           SettingsTile(
-              title: 'Vaši termini',
+              title: 'Your appointments',
               icon: Icons.lock_clock,
               destination: AddArrangementScreen()),
           const SettingsTile(
-              title: 'Profil', icon: Icons.person, destination: ProfileTile()),
+              title: 'Profile', icon: Icons.person, destination: ProfileTile()),
           const SettingsTile(
-              title: 'Obavijesti',
+              title: 'Notifications',
               icon: Icons.notifications,
               destination: NotificationTile()),
           SettingsTile(
-              title: 'Pomoć', icon: Icons.book, destination: HelpTile()),
+              title: 'Help', icon: Icons.book, destination: HelpTile()),
           const SettingsTile(
-              title: 'O nama', icon: Icons.book, destination: AboutTile()),
+              title: 'About us', icon: Icons.book, destination: AboutTile()),
           const SettingsTile(
-              title: 'Odjavi se',
-              icon: Icons.logout,
-              destination: ProfileTile()),
+              title: 'Log out', icon: Icons.logout, destination: ProfileTile()),
         ],
       ),
     );

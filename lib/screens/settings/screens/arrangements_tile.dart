@@ -54,19 +54,13 @@ class _AddArrangementScreenState extends State<AddArrangementScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         leading: IconButton(
-          color: Colors.black,
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          'Vaši termini',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: Text('Vaši termini'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -76,7 +70,7 @@ class _AddArrangementScreenState extends State<AddArrangementScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Termin'),
+                decoration: InputDecoration(labelText: 'Appointment'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a title';
@@ -90,7 +84,7 @@ class _AddArrangementScreenState extends State<AddArrangementScreen> {
               SizedBox(height: 16),
               Row(
                 children: [
-                  Text('Vrijeme termina: '),
+                  Text('Appointment time:'),
                   TextButton(
                     child: Text(DateFormat('dd.MM.yyyy hh:mm a').format(_time)),
                     onPressed: () {
@@ -101,7 +95,7 @@ class _AddArrangementScreenState extends State<AddArrangementScreen> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                child: Text('Dodaj termin'),
+                child: Text('Add apointment'),
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     _formKey.currentState?.save();

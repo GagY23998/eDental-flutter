@@ -5,10 +5,7 @@ class HelpTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         leading: IconButton(
-          color: Colors.black,
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
@@ -16,7 +13,6 @@ class HelpTile extends StatelessWidget {
         ),
         title: Text(
           'Help',
-          style: TextStyle(color: Colors.black),
         ),
       ),
       body: ListView(

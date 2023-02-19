@@ -63,11 +63,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
           title: Text(
             'Schedule an apointment',
-            style: TextStyle(color: Colors.black),
           ),
         ),
         body: Column(
@@ -89,9 +86,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                   borderRadius: BorderRadius.circular(5.0),
                                   hint: Text(
                                     'Choose doctor',
-                                    style: TextStyle(
-                                        color: Colors.grey[850],
-                                        fontSize: 14.0),
+                                    style: TextStyle(fontSize: 14.0),
                                   ),
                                   icon: Icon(Icons.keyboard_arrow_down),
                                   items: dentists.getDentistsDropdown(),

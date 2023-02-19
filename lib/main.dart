@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:edental/helpers/navigation_routes.dart';
+import 'package:edental/models/theme.dart';
 import 'package:edental/providers/appointmentProvider.dart';
 import 'package:edental/providers/auth.dart';
 import 'package:edental/providers/dentist.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
         ],
         child: Consumer<Auth>(
             builder: ((context, value, child) => MaterialApp(
+                theme: lightTheme,
                 home: value.isAuthenticated
                     ? TabScreen()
                     : const AuthScreen()))));

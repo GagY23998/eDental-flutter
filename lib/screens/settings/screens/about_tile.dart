@@ -7,10 +7,7 @@ class AboutTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         leading: IconButton(
-          color: Colors.black,
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
@@ -18,7 +15,6 @@ class AboutTile extends StatelessWidget {
         ),
         title: Text(
           'About us',
-          style: TextStyle(color: Colors.black),
         ),
       ),
       body: ListView(

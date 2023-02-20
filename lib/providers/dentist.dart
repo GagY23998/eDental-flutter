@@ -8,7 +8,6 @@ class DentistProvider extends ChangeNotifier {
   List<Dentist> _dentist = [];
 
   List<Dentist> get dentists => [..._dentist];
-
   final DentistService dentistService = DentistService();
 
   Future<List<Dentist>> getDentistsAsync() async =>

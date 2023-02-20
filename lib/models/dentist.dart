@@ -11,7 +11,7 @@ class Dentist {
   String address;
   DateTime birthDate;
   int dentistOfficeId;
-  ByteBuffer? image;
+  Uint8List image;
   String description;
   bool active;
   String fullName;

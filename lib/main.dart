@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:edental/helpers/navigation_routes.dart';
 import 'package:edental/models/theme.dart';
 import 'package:edental/providers/appointmentProvider.dart';
@@ -27,8 +26,8 @@ class MyHttpOverrides extends HttpOverrides {
 
 Future<void> main() async {
   await dotenv.load();
-  // HttpOverrides.global =
-  // MyHttpOverrides(); // if using flutter in web, comment this line
+  HttpOverrides.global =
+      MyHttpOverrides(); // if using flutter in web, comment this line
   initializeJsonMapper();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());

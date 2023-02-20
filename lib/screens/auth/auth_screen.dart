@@ -82,8 +82,14 @@ class _AuthLoginState extends State<AuthLogin> {
                 height: 30,
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
                       onPressed: () =>
                           value.authenticate(_username.text, _password.text),
                       child: const Text('Login')),

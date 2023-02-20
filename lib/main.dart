@@ -58,6 +58,7 @@ class MyApp extends StatelessWidget {
         ],
         child: Consumer<Auth>(
             builder: ((context, value, child) => MaterialApp(
+                debugShowCheckedModeBanner: false,
                 theme: lightTheme,
                 home: value.isAuthenticated
                     ? TabScreen()

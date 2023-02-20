@@ -1,3 +1,4 @@
+import 'package:edental/models/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -70,8 +71,10 @@ class _AuthLoginState extends State<AuthLogin> {
                 ),
               ),
               SizedBox(height: 30),
-              TextFormField(
-                controller: _username,
+              Center(
+                child: TextFormField(
+                  controller: _username,
+                ),
               ),
               TextFormField(
                 obscureText: true,
@@ -81,20 +84,37 @@ class _AuthLoginState extends State<AuthLogin> {
                 height: 30,
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
                       onPressed: () =>
                           value.authenticate(_username.text, _password.text),
                       child: const Text('Login')),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25),
                   ),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey,
-                          textStyle: const TextStyle(color: Colors.black)),
-                      onPressed: () {},
-                      child: const Text('Register'))
+                  OutlinedButton(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: scaffoldColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      side: BorderSide(
+                        width: 2.0,
+                        color: buttonColor1,
+                      ),
+                    ),
+                    child: Text(
+                      'Register',
+                      style: TextStyle(color: buttonColor1),
+                    ),
+                  ),
                 ],
               ),
             ],

@@ -47,7 +47,10 @@ class MyApp extends StatelessWidget {
             update: (context, value, previous) =>
                 TreatmentProvider(value.user?.username, value.user?.password),
           ),
-          ChangeNotifierProvider.value(value: DentistProvider()),
+          ChangeNotifierProxyProvider<Auth, DentistProvider>(
+            create: (_) => DentistProvider(null),
+            update: (context, value, previous) => DentistProvider(value.user),
+          ),
           ChangeNotifierProxyProvider<Auth, AppointmentProvider>(
               create: (_) => AppointmentProvider(null),
               update: (_, value, appointments) =>

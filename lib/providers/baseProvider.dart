@@ -65,8 +65,8 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
   }
 
   @override
-  Future<T> getById(id) async {
-    uri = Uri.parse('$_url/$_apiName/$id');
+  Future<T> getById(id, {String path = ''}) async {
+    uri = Uri.parse('$_url/$_apiName$path/$id');
     final result = await http
         .post(uri, headers: headers)
         .then((value) => JsonMapper.deserialize(value.body) as T);
@@ -77,6 +77,14 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
     uri = Uri.parse('$_url/$_apiName$path');
     final result = await http.post(uri,
         headers: headers, body: JsonMapper.serialize(request));
+    final deserializedResult = JsonMapper.deserialize<List<T>>(result.body);
+    return deserializedResult ?? [];
+  }
+
+  @override
+  Future<List<T>> getMultipleById(id, {String path = ''}) async {
+    uri = Uri.parse('$_url/$_apiName$path/$id');
+    final result = await http.get(uri, headers: headers);
     final deserializedResult = JsonMapper.deserialize<List<T>>(result.body);
     return deserializedResult ?? [];
   }

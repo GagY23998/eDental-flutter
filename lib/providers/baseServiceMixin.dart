@@ -7,4 +7,5 @@ mixin BaseServiceMixin<T> {
   Future<List<T>> get(dynamic searchRequest, {String? path = ''});
   Future<T> create(dynamic request, {String? path = ''});
   Future<bool?> delete(dynamic objectId);
+  Future<List<T>> getMultipleById(dynamic id, {String path = ''});
 }

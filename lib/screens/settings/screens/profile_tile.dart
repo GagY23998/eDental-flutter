@@ -11,41 +11,65 @@ class ProfileTile extends StatefulWidget {
 }
 
 class _ProfileTileState extends State<ProfileTile> {
-  late final TextEditingController _nameController;
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
   late final TextEditingController _usernameController;
+  late final TextEditingController _addressController;
   late final TextEditingController _passwordController;
+  late final TextEditingController _emailController;
   late final TextEditingController _cityController;
-  late String _name;
+  late final TextEditingController _phoneController;
+  late String _firstName;
   late String _username;
   late String _password;
   late String _city;
+  late String _lastName;
+  late String _email;
+  late String _phone;
+  late String _address;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController();
+    _firstNameController = TextEditingController();
+    _lastNameController = TextEditingController();
     _usernameController = TextEditingController();
     _passwordController = TextEditingController();
     _cityController = TextEditingController();
-    _name = '';
+    _phoneController = TextEditingController();
+    _emailController = TextEditingController();
+    _addressController = TextEditingController();
+    _firstName = '';
+    _lastName = '';
     _username = '';
     _password = '';
     _city = '';
+    _phone = '';
+    _address = '';
+    _email = '';
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     _cityController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
   void _saveChanges() {
     setState(() {
-      _name = _nameController.text;
+      _firstName = _firstNameController.text;
+      _lastName = _lastNameController.text;
       _username = _usernameController.text;
+      _address = _addressController.text;
+      _email = _emailController.text;
+      _phone = _phoneController.text;
       _password = _passwordController.text;
       _city = _cityController.text;
     });
@@ -53,10 +77,14 @@ class _ProfileTileState extends State<ProfileTile> {
 
   void _discardChanges() {
     setState(() {
-      _nameController.text = _name;
+      _firstNameController.text = _firstName;
+      _lastNameController.text = _lastName;
       _usernameController.text = _username;
       _passwordController.text = _password;
       _cityController.text = _city;
+      _emailController.text = _email;
+      _addressController.text = _address;
+      _phoneController.text = _phone;
     });
   }
 
@@ -73,59 +101,86 @@ class _ProfileTileState extends State<ProfileTile> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(60.0, 0, 60.0, 0),
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus;
-          },
-          child: ListView(
-            children: [
-              Container(
-                alignment: Alignment.topLeft,
-                child: const Text(
-                  'Edit Profile',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 28.0,
-                      fontWeight: FontWeight.w500),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(60.0, 0, 60.0, 0),
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus;
+            },
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Container(
+                  alignment: Alignment.topLeft,
+                  child: const Text(
+                    'Edit Profile',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 28.0,
+                        fontWeight: FontWeight.w500),
+                  ),
                 ),
-              ),
-              const EditableProfilePhoto(),
-              ProfileTextfield(
-                  label: 'Ime i prezime',
-                  placeholder: 'Unesite vaše ime i prezime',
+                const EditableProfilePhoto(),
+                ProfileTextfield(
+                    label: 'First name',
+                    placeholder: 'Enter your first name',
+                    isPasswordTextfield: false,
+                    controller: _firstNameController),
+                ProfileTextfield(
+                    label: 'Last name',
+                    placeholder: 'Enter your last name',
+                    isPasswordTextfield: false,
+                    controller: _lastNameController),
+                ProfileTextfield(
+                  label: 'Username',
+                  placeholder: 'Username',
                   isPasswordTextfield: false,
-                  controller: _nameController),
-              ProfileTextfield(
-                label: 'Korisničko ime',
-                placeholder: 'Unesite vaše korisničko ime',
-                isPasswordTextfield: false,
-                controller: _usernameController,
-              ),
-              ProfileTextfield(
-                label: 'Lozinka',
-                placeholder: 'Unesite vašu lozinku',
-                isPasswordTextfield: true,
-                controller: _passwordController,
-              ),
-              ProfileTextfield(
-                label: 'Grad',
-                placeholder: 'Unesite grad u kojem ste nastanjeni',
-                isPasswordTextfield: false,
-                controller: _cityController,
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                OutlinedButton(
-                  onPressed: () {},
-                  child: Text('Otkaži'),
+                  controller: _usernameController,
                 ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text('Prihvati'),
+                ProfileTextfield(
+                  label: 'Password',
+                  placeholder: 'Your pasword',
+                  isPasswordTextfield: true,
+                  controller: _passwordController,
                 ),
-              ]),
-            ],
+                ProfileTextfield(
+                  label: 'City',
+                  placeholder: 'City that you live in',
+                  isPasswordTextfield: false,
+                  controller: _cityController,
+                ),
+                ProfileTextfield(
+                  label: 'Email',
+                  placeholder: 'Enter your email address',
+                  isPasswordTextfield: false,
+                  controller: _emailController,
+                ),
+                ProfileTextfield(
+                  label: 'Address',
+                  placeholder: 'Address where you live in',
+                  isPasswordTextfield: false,
+                  controller: _addressController,
+                ),
+                ProfileTextfield(
+                    label: 'Phone',
+                    placeholder: 'Your phone number',
+                    isPasswordTextfield: false,
+                    controller: _phoneController),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {},
+                        child: const Text('Dispose'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('Accept'),
+                      ),
+                    ]),
+              ],
+            ),
           ),
         ),
       ),

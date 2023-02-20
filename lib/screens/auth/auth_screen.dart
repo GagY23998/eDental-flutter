@@ -1,3 +1,4 @@
+import 'package:edental/screens/settings/screens/profile_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -69,7 +70,7 @@ class _AuthLoginState extends State<AuthLogin> {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               TextFormField(
                 controller: _username,
               ),
@@ -93,7 +94,9 @@ class _AuthLoginState extends State<AuthLogin> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey,
                           textStyle: const TextStyle(color: Colors.black)),
-                      onPressed: () {},
+                      onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (ctx) => const ProfileTile())),
                       child: const Text('Register'))
                 ],
               ),

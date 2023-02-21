@@ -21,7 +21,8 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
   int selectedDentistId = 0;
   int selectedTreatmentId = 0;
   bool isSaveButtonEnabled = false;
-
+  Dentist? _selectedDentist = null;
+  Treatment? _selectedTreatment = null;
   Appointment? makeReservation(int userId) {
     if (isSaveButtonEnabled) {
       Appointment appointment = Appointment(
@@ -60,7 +61,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           'Appointment details',
         ),
       ),
@@ -100,6 +101,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                             widthFactor: 0.8,
                             child: DropdownButtonHideUnderline(
                                 child: DropdownButton(
+                                    value: _selectedDentist,
                                     disabledHint:
                                         widget.appointmentItem.IsReserved
                                             ? Text(snapshot.data!
@@ -113,15 +115,18 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                     dropdownColor: Colors.deepPurpleAccent,
                                     items: widget.appointmentItem.IsReserved
                                         ? []
-                                        : snapshot.data!
-                                            .map((e) => DropdownMenuItem(
-                                                  value: e.id,
-                                                  child: Text(e.fullName),
-                                                ))
-                                            .toList(),
+                                        : dentistsProvider
+                                            .getDentistsDropdown(),
+                                    // snapshot.data!
+                                    //     .map((e) => DropdownMenuItem(
+                                    //           value: e,
+                                    //           child: Text(e.fullName),
+                                    //         ))
+                                    //     .toList(),
                                     onChanged: (val) {
                                       setState(() {
-                                        selectedDentistId = val as int;
+                                        _selectedDentist = val;
+                                        selectedDentistId = val?.id;
                                         isSaveButtonEnabled =
                                             enableButtonSaving();
                                       });
@@ -169,10 +174,11 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                       items: [],
                                     )
                                   : DropdownButton(
+                                      value: _selectedTreatment,
                                       items: treatment.getDropdown(),
                                       onChanged: (value) => setState(() {
-                                            selectedTreatmentId = value;
-
+                                            selectedTreatmentId = value.id;
+                                            _selectedTreatment = value;
                                             isSaveButtonEnabled =
                                                 enableButtonSaving();
                                           }))));

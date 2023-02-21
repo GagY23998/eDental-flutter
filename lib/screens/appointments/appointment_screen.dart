@@ -26,6 +26,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     'Sat',
     'Sun'
   ];
+  Dentist? selectedDentist = null;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -85,6 +86,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                               builder: (context, snapshot) {
                                 return DropdownButton(
                                     itemHeight: null,
+                                    value: selectedDentist,
                                     borderRadius: BorderRadius.circular(5.0),
                                     hint: const Text(
                                       'Choose doctor',
@@ -93,11 +95,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                     icon: const Icon(Icons.keyboard_arrow_down),
                                     items: dentists.getDentistsDropdown(),
                                     onChanged: (val) {
-                                      appointments.setDentistAppointments(
-                                          dentistList
-                                              .firstWhere((element) =>
-                                                  element.fullName == val)
-                                              .id);
+                                      setState(() {
+                                        selectedDentist = val;
+                                      });
+                                      appointments
+                                          .setDentistAppointments(val.id);
                                     });
                               },
                             ),
@@ -106,7 +108,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                             onPressed: () => pickDateRange(
                                     appointments.weekRange,
                                     DateTime.now().add(Duration(
-                                        days: DateTime.now().weekday - 1)))
+                                        days: -(DateTime.now().weekday - 1))))
                                 .then((value) {
                               if (value != null) {
                                 appointments.setWeekDaysFromRange(value);

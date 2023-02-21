@@ -1,5 +1,6 @@
 import 'package:edental/models/dentist.dart';
 import 'package:edental/providers/appointmentProvider.dart';
+import 'package:edental/screens/appointments/dentist_recommendation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -25,6 +26,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     'Sat',
     'Sun'
   ];
+  Dentist? selectedDentist = null;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -63,86 +65,101 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(
-            'Schedule an apointment',
+          title: const Text(
+            'Appointments',
           ),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Consumer<AppointmentProvider>(
-              builder: (context, appointments, child) => Container(
-                child: Column(children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        DropdownButtonHideUnderline(
-                          child: FutureBuilder<List<Dentist>>(
-                            future: dentists.getDentistsAsync(),
-                            builder: (context, snapshot) {
-                              return DropdownButton(
-                                  itemHeight: null,
-                                  borderRadius: BorderRadius.circular(5.0),
-                                  hint: Text(
-                                    'Choose doctor',
-                                    style: TextStyle(fontSize: 14.0),
-                                  ),
-                                  icon: Icon(Icons.keyboard_arrow_down),
-                                  items: dentists.getDentistsDropdown(),
-                                  onChanged: (val) {
-                                    appointments.setDentistAppointments(
-                                        dentistList
-                                            .firstWhere((element) =>
-                                                element.fullName == val)
-                                            .id);
-                                  });
-                            },
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Consumer<AppointmentProvider>(
+                builder: (context, appointments, child) => Container(
+                  child: Column(children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          DropdownButtonHideUnderline(
+                            child: FutureBuilder<List<Dentist>>(
+                              future: dentists.getDentistsAsync(),
+                              builder: (context, snapshot) {
+                                return DropdownButton(
+                                    itemHeight: null,
+                                    value: selectedDentist,
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    hint: const Text(
+                                      'Choose doctor',
+                                      style: TextStyle(fontSize: 14.0),
+                                    ),
+                                    icon: const Icon(Icons.keyboard_arrow_down),
+                                    items: dentists.getDentistsDropdown(),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        selectedDentist = val;
+                                      });
+                                      appointments
+                                          .setDentistAppointments(val.id);
+                                    });
+                              },
+                            ),
                           ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => pickDateRange(
-                                  appointments.weekRange,
-                                  DateTime.now().add(Duration(
-                                      days: DateTime.now().weekday - 1)))
-                              .then((value) {
-                            if (value != null) {
-                              appointments.setWeekDaysFromRange(value);
-                            }
-                          }),
-                          child: Consumer<AppointmentProvider>(
-                            builder: (context, value, child) => Text(
-                                '${DateFormat('dd.MM.yyyy').format(value.firstDayOfWeek)}-${DateFormat('dd.MM.yyyy').format(value.lastDayOfWeek)}'),
-                          ),
-                        )
-                      ]),
-                  SizedBox(
-                      height: deviceSize.height / 8,
-                      width: deviceSize.width,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: weekDays.map((e) => Text(e)).toList())),
-                  FutureBuilder(
-                    future: appointments.calculateAppointmentsForWeek(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        List<Widget>? appointments =
-                            snapshot.data?.entries.map((e) {
-                          return Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: e.value);
-                        }).toList();
-                        return Row(
+                          ElevatedButton(
+                            onPressed: () => pickDateRange(
+                                    appointments.weekRange,
+                                    DateTime.now().add(Duration(
+                                        days: -(DateTime.now().weekday - 1))))
+                                .then((value) {
+                              if (value != null) {
+                                appointments.setWeekDaysFromRange(value);
+                              }
+                            }),
+                            child: Consumer<AppointmentProvider>(
+                              builder: (context, value, child) => Text(
+                                  '${DateFormat('dd.MM.yyyy').format(value.firstDayOfWeek)}-${DateFormat('dd.MM.yyyy').format(value.lastDayOfWeek)}'),
+                            ),
+                          )
+                        ]),
+                    SizedBox(
+                        height: deviceSize.height / 8,
+                        width: deviceSize.width,
+                        child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: appointments ?? []);
-                      }
-                      return const CircularProgressIndicator();
-                    },
-                  )
-                ]),
+                            children: weekDays.map((e) => Text(e)).toList())),
+                    FutureBuilder(
+                      future: appointments.calculateAppointmentsForWeek(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          List<Widget>? appointments =
+                              snapshot.data?.entries.map((e) {
+                            return Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: e.value);
+                          }).toList();
+                          return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: appointments ?? []);
+                        }
+                        return const CircularProgressIndicator();
+                      },
+                    )
+                  ]),
+                ),
               ),
-            )
-          ],
+              FutureBuilder(
+                future: dentists.getRecommendedDentistAsync(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Recommendations(snapshot.data ?? []);
+                  }
+                  if (snapshot.hasError) {
+                    return const Text('Error has occurred');
+                  }
+                  return const CircularProgressIndicator();
+                },
+              )
+            ],
+          ),
         ));
   }
 }

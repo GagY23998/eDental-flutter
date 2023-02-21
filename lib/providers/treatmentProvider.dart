@@ -21,7 +21,7 @@ class TreatmentProvider extends ChangeNotifier {
 
   List<DropdownMenuItem> getDropdown() => treatments
       .map((e) => DropdownMenuItem(
-            value: e.id,
+            value: e,
             child: Text(e.name),
           ))
       .toList();

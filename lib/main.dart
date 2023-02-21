@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:edental/helpers/navigation_routes.dart';
 import 'package:edental/models/theme.dart';
 import 'package:edental/providers/appointmentProvider.dart';
@@ -27,8 +26,8 @@ class MyHttpOverrides extends HttpOverrides {
 
 Future<void> main() async {
   await dotenv.load();
-  // HttpOverrides.global =
-  // MyHttpOverrides(); // if using flutter in web, comment this line
+  HttpOverrides.global =
+      MyHttpOverrides(); // if using flutter in web, comment this line
   initializeJsonMapper();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -48,7 +47,10 @@ class MyApp extends StatelessWidget {
             update: (context, value, previous) =>
                 TreatmentProvider(value.user?.username, value.user?.password),
           ),
-          ChangeNotifierProvider.value(value: DentistProvider()),
+          ChangeNotifierProxyProvider<Auth, DentistProvider>(
+            create: (_) => DentistProvider(null),
+            update: (context, value, previous) => DentistProvider(value.user),
+          ),
           ChangeNotifierProxyProvider<Auth, AppointmentProvider>(
               create: (_) => AppointmentProvider(null),
               update: (_, value, appointments) =>

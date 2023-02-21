@@ -1,4 +1,4 @@
-import 'package:edental/models/theme.dart';
+import 'package:edental/screens/settings/screens/profile_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
@@ -70,11 +70,9 @@ class _AuthLoginState extends State<AuthLogin> {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 30),
-              Center(
-                child: TextFormField(
-                  controller: _username,
-                ),
+              const SizedBox(height: 30),
+              TextFormField(
+                controller: _username,
               ),
               TextFormField(
                 obscureText: true,
@@ -98,23 +96,14 @@ class _AuthLoginState extends State<AuthLogin> {
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25),
                   ),
-                  OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor: scaffoldColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      side: BorderSide(
-                        width: 2.0,
-                        color: buttonColor1,
-                      ),
-                    ),
-                    child: Text(
-                      'Register',
-                      style: TextStyle(color: buttonColor1),
-                    ),
-                  ),
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey,
+                          textStyle: const TextStyle(color: Colors.black)),
+                      onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (ctx) => const ProfileTile())),
+                      child: const Text('Register'))
                 ],
               ),
             ],

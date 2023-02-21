@@ -29,13 +29,9 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text(
           'Settings',
         ),
       ),

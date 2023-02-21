@@ -1,4 +1,4 @@
-import 'dart:html';
+// import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,7 +26,7 @@ class _EditableProfilePhotoState extends State<EditableProfilePhoto> {
         Container(
           child: Stack(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 80,
                 backgroundImage: AssetImage('images/dummy.png'),
               ),
@@ -37,7 +37,7 @@ class _EditableProfilePhotoState extends State<EditableProfilePhoto> {
                   onTap: (() {
                     getImage();
                   }),
-                  child: Icon(
+                  child: const Icon(
                     Icons.camera_alt,
                     color: Colors.greenAccent,
                     size: 28.0,
@@ -48,9 +48,9 @@ class _EditableProfilePhotoState extends State<EditableProfilePhoto> {
           ),
         ),
         Container(
-          padding: EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           alignment: Alignment.bottomCenter,
-          child: Text(
+          child: const Text(
             'username',
             style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
           ),

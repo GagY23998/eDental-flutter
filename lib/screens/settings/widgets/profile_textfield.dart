@@ -22,6 +22,7 @@ class _ProfileTextfieldState extends State<ProfileTextfield> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 30.0),
       child: TextField(
+        controller: widget.controller,
         obscureText: widget.isPasswordTextfield ? showPassword : false,
         decoration: InputDecoration(
           suffixIcon: widget.isPasswordTextfield
@@ -37,12 +38,13 @@ class _ProfileTextfieldState extends State<ProfileTextfield> {
               : null,
           label: Text(
             widget.label,
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold),
           ),
-          contentPadding: EdgeInsets.only(bottom: 3.0),
+          contentPadding: const EdgeInsets.only(bottom: 3.0),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           hintText: widget.placeholder,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
               fontSize: 16.0, color: Colors.grey, fontWeight: FontWeight.w500),
         ),
       ),

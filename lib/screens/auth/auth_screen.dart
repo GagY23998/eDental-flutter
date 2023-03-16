@@ -102,7 +102,7 @@ class _AuthLoginState extends State<AuthLogin> {
                           textStyle: const TextStyle(color: Colors.black)),
                       onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                              builder: (ctx) => const ProfileTile())),
+                              builder: (ctx) => ProfileTile(user: null))),
                       child: const Text('Register'))
                 ],
               ),

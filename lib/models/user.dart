@@ -4,6 +4,8 @@ import '../enums/gender.dart';
 import '../enums/role.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 
+import '../helpers/dateJsonFormatter.dart';
+
 @jsonSerializable
 class User {
   int? id;
@@ -15,22 +17,25 @@ class User {
   String? address;
   String? password;
   String? passwordConfirm;
+  @JsonProperty(converter: CustomRoleEnumConverter())
   Role? role;
+  @JsonProperty(converter: CustomGenderEnumConverter())
   Gender? gender;
-  ByteBuffer? image;
+  Uint8List? image;
   String get fullName => '$firstName $lastName';
-
-  User({
-    this.firstName = '',
-    this.lastName = '',
-    this.username = '',
-    this.phone,
-    this.email = '',
-    this.address,
-    this.password,
-    this.passwordConfirm,
-    this.role,
-    this.gender,
-    this.image,
-  });
+  bool isNotificationEnabled;
+  User(
+      {this.firstName = '',
+      this.lastName = '',
+      this.username = '',
+      this.phone,
+      this.email = '',
+      this.address,
+      this.password,
+      this.passwordConfirm,
+      this.role,
+      this.gender,
+      this.image,
+      this.id,
+      this.isNotificationEnabled = false});
 }

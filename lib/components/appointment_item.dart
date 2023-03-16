@@ -50,7 +50,7 @@ class _AppointmentItemState extends State<AppointmentItem> {
                 color: Colors.white,
                 backgroundColor:
                     widget.IsReserved ? Colors.red : Colors.green[600]),
-            DateFormat('H:mm').format(widget.appointmentHour)),
+            DateFormat('HH:mm').format(widget.appointmentHour)),
       ),
     );
   }

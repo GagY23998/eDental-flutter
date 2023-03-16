@@ -7,6 +7,7 @@ import 'package:edental/providers/dentist.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../providers/paymentService.dart';
 import '../providers/treatmentProvider.dart';
 import 'appointment_item.dart';
 
@@ -18,7 +19,7 @@ class AppointmentDetail extends StatefulWidget {
 }
 
 class _AppointmentDetailState extends State<AppointmentDetail> {
-  int selectedDentistId = 0;
+  int? selectedDentistId = 0;
   int selectedTreatmentId = 0;
   bool isSaveButtonEnabled = false;
   Dentist? _selectedDentist = null;
@@ -29,8 +30,8 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
           0,
           widget.appointmentItem.appointmentHour,
           widget.appointmentItem.appointmentHour.add(const Duration(hours: 1)),
-          selectedDentistId,
-          selectedTreatmentId,
+          _selectedDentist!.id ?? 0,
+          _selectedTreatment!.id,
           userId,
           '',
           '',
@@ -52,7 +53,11 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
     final dentistsProvider = Provider.of<DentistProvider>(context);
     final treatment = Provider.of<TreatmentProvider>(context);
     final appointments = Provider.of<AppointmentProvider>(context);
+    final paymentService = Provider.of<PaymentService>(context);
     final deviceSize = MediaQuery.of(context).size;
+    selectedDentistId = widget.appointmentItem.IsReserved
+        ? widget.appointmentItem.appointment!.dentistId
+        : appointments.selectedDentistId;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -74,7 +79,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
               Center(
                 child: TextFormField(
                   decoration: const InputDecoration(label: Text('Start date')),
-                  readOnly: widget.appointmentItem.IsReserved,
+                  readOnly: true,
                   initialValue: DateFormat('dd.MM.yyyy H:mm').format(
                       widget.appointmentItem.IsReserved
                           ? widget.appointmentItem.appointment!.start
@@ -88,7 +93,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                         : widget.appointmentItem.appointmentHour
                             .add(const Duration(hours: 1))),
                 decoration: const InputDecoration(label: Text('End date')),
-                readOnly: widget.appointmentItem.IsReserved,
+                readOnly: true,
               ),
               FutureBuilder<List<Dentist>>(
                   future: dentistsProvider.getDentistsAsync(),
@@ -97,40 +102,39 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
-                            heightFactor: .3,
-                            widthFactor: 0.8,
-                            child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                    value: _selectedDentist,
-                                    disabledHint:
-                                        widget.appointmentItem.IsReserved
-                                            ? Text(snapshot.data!
-                                                .firstWhere((e) =>
-                                                    e.id ==
-                                                    widget.appointmentItem
-                                                        .appointment!.dentistId)
-                                                .fullName)
-                                            : null,
-                                    elevation: 2,
-                                    dropdownColor: Colors.deepPurpleAccent,
-                                    items: widget.appointmentItem.IsReserved
-                                        ? []
-                                        : dentistsProvider
-                                            .getDentistsDropdown(),
-                                    // snapshot.data!
-                                    //     .map((e) => DropdownMenuItem(
-                                    //           value: e,
-                                    //           child: Text(e.fullName),
-                                    //         ))
-                                    //     .toList(),
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _selectedDentist = val;
-                                        selectedDentistId = val?.id;
-                                        isSaveButtonEnabled =
-                                            enableButtonSaving();
-                                      });
-                                    }))),
+                          heightFactor: .3,
+                          widthFactor: 0.8,
+                          child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                  hint: appointments.selectedDentistId != null
+                                      ? Text(snapshot.data!
+                                          .firstWhere(
+                                              (e) => e.id == selectedDentistId)
+                                          .fullName)
+                                      : const Text('Choose a dentist'),
+                                  value: _selectedDentist,
+                                  disabledHint: widget
+                                              .appointmentItem.IsReserved ||
+                                          appointments.selectedDentistId != null
+                                      ? Text(snapshot.data!
+                                          .firstWhere(
+                                              (e) => e.id == selectedDentistId)
+                                          .fullName)
+                                      : null,
+                                  elevation: 2,
+                                  items: widget.appointmentItem.IsReserved ||
+                                          appointments.selectedDentistId != null
+                                      ? null
+                                      : dentistsProvider.getDentistsDropdown(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _selectedDentist = val as Dentist?;
+                                      selectedDentistId = val?.id;
+                                      isSaveButtonEnabled =
+                                          enableButtonSaving();
+                                    });
+                                  })),
+                        ),
                       );
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -146,42 +150,42 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Center(
-                          child: DropdownButtonHideUnderline(
-                              child: widget.appointmentItem.IsReserved
-                                  ? DropdownButton(
-                                      disabledHint:
-                                          widget.appointmentItem.IsReserved
-                                              ? Text(snapshot.data!
-                                                  .firstWhere((e) =>
-                                                      e.id ==
-                                                      widget
-                                                          .appointmentItem
-                                                          .appointment!
-                                                          .dentistId)
-                                                  .name)
-                                              : null,
-                                      value: snapshot.data!
-                                          .where((e) =>
-                                              e.id ==
-                                              widget.appointmentItem
-                                                  .appointment!.dentistId)
-                                          .map((e) => DropdownMenuItem(
-                                                value: e.id,
-                                                child: Text(e.name),
-                                              ))
-                                          .first,
-                                      onChanged: null,
-                                      items: [],
-                                    )
-                                  : DropdownButton(
-                                      value: _selectedTreatment,
-                                      items: treatment.getDropdown(),
-                                      onChanged: (value) => setState(() {
-                                            selectedTreatmentId = value.id;
-                                            _selectedTreatment = value;
-                                            isSaveButtonEnabled =
-                                                enableButtonSaving();
-                                          }))));
+                        child: DropdownButtonHideUnderline(
+                            child: widget.appointmentItem.IsReserved
+                                ? DropdownButton(
+                                    disabledHint:
+                                        widget.appointmentItem.IsReserved
+                                            ? Text(snapshot.data!
+                                                .firstWhere((e) =>
+                                                    e.id ==
+                                                    widget.appointmentItem
+                                                        .appointment!.dentistId)
+                                                .name)
+                                            : null,
+                                    value: snapshot.data!
+                                        .where((e) =>
+                                            e.id ==
+                                            widget.appointmentItem.appointment!
+                                                .dentistId)
+                                        .map((e) => DropdownMenuItem(
+                                              value: e.id,
+                                              child: Text(e.name),
+                                            ))
+                                        .first,
+                                    onChanged: null,
+                                    items: [],
+                                  )
+                                : DropdownButton(
+                                    hint: const Text('Choose treatment'),
+                                    value: _selectedTreatment,
+                                    items: treatment.getDropdown(),
+                                    onChanged: (value) => setState(() {
+                                          selectedTreatmentId = value.id;
+                                          _selectedTreatment = value;
+                                          isSaveButtonEnabled =
+                                              enableButtonSaving();
+                                        }))),
+                      );
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
@@ -194,8 +198,41 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
               !widget.appointmentItem.IsReserved
                   ? ElevatedButton(
                       onPressed: isSaveButtonEnabled
-                          ? () => appointments.createAppointment(
-                              makeReservation(authProvider.user?.id ?? 0))
+                          ? () async {
+                              final existingAppointment =
+                                  await appointments.checkExistingAppointment(
+                                      selectedDentistId ?? _selectedDentist!.id,
+                                      widget.appointmentItem.appointmentHour,
+                                      widget.appointmentItem.appointmentHour
+                                          .add(const Duration(hours: 1)));
+                              if (existingAppointment != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Appointment is already taken for chosen dentist')));
+                                return;
+                              }
+                              final paymentResult =
+                                  await paymentService.payTreatment(
+                                      authProvider.user!,
+                                      _selectedTreatment!.id,
+                                      _selectedTreatment!.price,
+                                      _selectedTreatment!.name);
+                              if (paymentResult == 'Success') {
+                                await appointments.createAppointment(
+                                    makeReservation(
+                                        authProvider.user?.id ?? 0));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text('Payment was successfull')));
+                                Navigator.pop(context);
+                              } else {
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(paymentResult)));
+                              }
+                            }
                           : null,
                       child: const Text('Make a reservation'))
                   : ElevatedButton(

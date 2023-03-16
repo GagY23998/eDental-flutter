@@ -4,9 +4,9 @@ import 'package:edental/helpers/dateJsonFormatter.dart';
 
 @jsonSerializable
 class AppointmentSearchRequest {
-  @JsonProperty(converter: CustomDateTimeConverter())
+  @JsonProperty(ignoreIfNull: true, converter: CustomDateTimeConverter())
   DateTime? start;
-  @JsonProperty(converter: CustomDateTimeConverter())
+  @JsonProperty(ignoreIfNull: true, converter: CustomDateTimeConverter())
   DateTime? end;
   int? dentistId;
   int? treatmentId;

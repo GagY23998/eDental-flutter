@@ -1,11 +1,20 @@
+import 'dart:typed_data';
+
+import 'package:edental/providers/authService.dart';
 import 'package:edental/screens/settings/widgets/editable_photo.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:edental/screens/settings/widgets/profile_textfield.dart';
+import 'package:provider/provider.dart';
+
+import '../../../enums/gender.dart';
+import '../../../enums/role.dart';
+import '../../../models/user.dart';
+import '../../../providers/auth.dart';
 
 class ProfileTile extends StatefulWidget {
-  const ProfileTile({super.key});
-
+  ProfileTile({this.user, super.key});
+  User? user;
   @override
   State<ProfileTile> createState() => _ProfileTileState();
 }
@@ -19,34 +28,64 @@ class _ProfileTileState extends State<ProfileTile> {
   late final TextEditingController _emailController;
   late final TextEditingController _cityController;
   late final TextEditingController _phoneController;
-  late String _firstName;
-  late String _username;
-  late String _password;
-  late String _city;
-  late String _lastName;
-  late String _email;
-  late String _phone;
-  late String _address;
+  String _firstName = '';
+  String _username = '';
+  String _password = '';
+  String _city = '';
+  String _lastName = '';
+  String _email = '';
+  String _phone = '';
+  String _address = '';
+  late Gender _gender;
+  late Role _role;
+  Uint8List? _image = null;
+  User? user;
 
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController();
-    _lastNameController = TextEditingController();
-    _usernameController = TextEditingController();
-    _passwordController = TextEditingController();
-    _cityController = TextEditingController();
-    _phoneController = TextEditingController();
-    _emailController = TextEditingController();
-    _addressController = TextEditingController();
-    _firstName = '';
-    _lastName = '';
-    _username = '';
-    _password = '';
-    _city = '';
-    _phone = '';
-    _address = '';
-    _email = '';
+    user = widget.user;
+    if (user != null) {
+      _firstNameController = TextEditingController(text: user!.firstName);
+      _lastNameController = TextEditingController(text: user!.lastName);
+      _usernameController = TextEditingController(text: user!.username);
+      _passwordController = TextEditingController();
+      _cityController = TextEditingController();
+      _phoneController = TextEditingController(text: user!.phone);
+      _emailController = TextEditingController(text: user!.email);
+      _addressController = TextEditingController(text: user!.address);
+      _role = user!.role!;
+      _gender = user!.gender!;
+      // setState(() {
+      //   _firstNameController.text = _firstName;
+      //   _lastNameController.text = _lastName;
+      //   _usernameController.text = _username;
+      //   _passwordController.text = _password;
+      //   _cityController.text = _city;
+      //   _emailController.text = _email;
+      //   _addressController.text = _address;
+      //   _phoneController.text = _phone;
+      // });
+    } else {
+      _firstNameController = TextEditingController();
+      _lastNameController = TextEditingController();
+      _usernameController = TextEditingController();
+      _passwordController = TextEditingController();
+      _cityController = TextEditingController();
+      _phoneController = TextEditingController();
+      _emailController = TextEditingController();
+      _addressController = TextEditingController();
+      _gender = Gender.values[0];
+      _role = Role.values[1];
+    }
+    // _firstName = '';
+    // _lastName = '';
+    // _username = '';
+    // _password = '';
+    // _city = '';
+    // _phone = '';
+    // _address = '';
+    // _email = '';
   }
 
   @override
@@ -90,13 +129,21 @@ class _ProfileTileState extends State<ProfileTile> {
 
   @override
   Widget build(BuildContext context) {
+    void setImageFunction(Uint8List image) {
+      setState(() {
+        _image = image;
+      });
+    }
+
+    final auth = Provider.of<Auth>(context);
+    final userProvider = Provider.of<UserService>(context);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           color: Colors.black,
           onPressed: () => Navigator.pop(context),
         ),
@@ -121,7 +168,13 @@ class _ProfileTileState extends State<ProfileTile> {
                         fontWeight: FontWeight.w500),
                   ),
                 ),
-                const EditableProfilePhoto(),
+                EditableProfilePhoto(
+                    (auth.isAuthenticated &&
+                            auth.user!.image != null &&
+                            auth.user!.image!.isNotEmpty
+                        ? auth.user!.image!
+                        : null) as Uint8List?,
+                    setImageFunction),
                 ProfileTextfield(
                     label: 'First name',
                     placeholder: 'Enter your first name',
@@ -156,6 +209,22 @@ class _ProfileTileState extends State<ProfileTile> {
                   isPasswordTextfield: false,
                   controller: _emailController,
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text('Gender'),
+                SwitchListTile(
+                    title: Text(_gender == Gender.Male ? 'Male' : 'Female'),
+                    value: _gender == Gender.Male,
+                    onChanged: (val) => setState(() {
+                          _gender = val ? Gender.Male : Gender.Female;
+                        })),
+                const Text('Role'),
+                SwitchListTile(
+                  title: Text(_role == Role.Admin ? 'Admin' : 'User'),
+                  value: _role == Role.Admin,
+                  onChanged: null,
+                ),
                 ProfileTextfield(
                   label: 'Address',
                   placeholder: 'Address where you live in',
@@ -175,7 +244,34 @@ class _ProfileTileState extends State<ProfileTile> {
                         child: const Text('Dispose'),
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          User userToRegisterOrUpdate = User(
+                              address: _addressController.text,
+                              firstName: _firstNameController.text,
+                              lastName: _lastNameController.text,
+                              phone: _phoneController.text,
+                              email: _emailController.text,
+                              role: _role,
+                              gender: _gender,
+                              image: _image,
+                              password: _passwordController.text,
+                              passwordConfirm: _passwordController.text,
+                              username: _usernameController.text);
+                          if (auth.isAuthenticated) {
+                            userToRegisterOrUpdate.id = auth.user!.id ?? 0;
+                            final result = userProvider.update(
+                                userToRegisterOrUpdate.id ?? 0,
+                                userToRegisterOrUpdate);
+                            if (result != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Successufully updated')));
+                            }
+                          } else {
+                            auth.signUp(_firstName, _lastName, _username,
+                                _email, _password, _password);
+                          }
+                        },
                         child: const Text('Accept'),
                       ),
                     ]),

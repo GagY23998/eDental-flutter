@@ -1,13 +1,21 @@
 // import 'dart:html';
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+
+import '../../../providers/auth.dart';
 
 class EditableProfilePhoto extends StatefulWidget {
-  const EditableProfilePhoto({
+  EditableProfilePhoto(
+    this._image,
+    this._setImageFunction, {
     Key? key,
   }) : super(key: key);
-
+  final Uint8List? _image;
+  final Function _setImageFunction;
   @override
   State<EditableProfilePhoto> createState() => _EditableProfilePhotoState();
 }
@@ -15,20 +23,37 @@ class EditableProfilePhoto extends StatefulWidget {
 class _EditableProfilePhotoState extends State<EditableProfilePhoto> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
+  Image? shownImage;
+  @override
+  void initState() {
+    if (widget._image != null) {
+      shownImage = Image.memory(widget._image!);
+    }
+    // TODO: implement initState
+    super.initState();
+  }
+
   Future getImage() async {
-    await _picker.pickImage(source: ImageSource.gallery);
+    final result = await _picker.pickImage(source: ImageSource.gallery);
+    if (result != null) {
+      _image = result;
+      widget._setImageFunction();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<Auth>(context);
     return Column(
       children: [
         Container(
           child: Stack(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 80,
-                backgroundImage: AssetImage('images/dummy.png'),
+                backgroundImage: shownImage != null
+                    ? shownImage?.image
+                    : const AssetImage('images/dummy.png'),
               ),
               Positioned(
                 bottom: 20.0,
@@ -50,9 +75,11 @@ class _EditableProfilePhotoState extends State<EditableProfilePhoto> {
         Container(
           padding: const EdgeInsets.all(10.0),
           alignment: Alignment.bottomCenter,
-          child: const Text(
-            'username',
-            style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+          child: Text(
+            authProvider.isAuthenticated
+                ? authProvider.user!.username
+                : 'username',
+            style: const TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
           ),
         )
       ],

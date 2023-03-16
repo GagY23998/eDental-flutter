@@ -9,11 +9,13 @@ import '../models/user.dart';
 
 class DentistProvider extends ChangeNotifier {
   List<Dentist> _dentist = [];
+  List<DropdownMenuItem> dropdownItems = [];
   late final User _user;
   List<Dentist> get dentists => [..._dentist];
+  List<Dentist> recommendedDentists = [];
   final DentistService dentistService = DentistService();
   RecommendationService recommendationService = RecommendationService();
-
+  int? _selectedDentistId;
   DentistProvider(User? user) {
     if (user != null) {
       _user = user;
@@ -35,17 +37,40 @@ class DentistProvider extends ChangeNotifier {
 
   List<DropdownMenuItem> getDentistsDropdown() {
     if (_dentist.isNotEmpty) {
-      return dentists
-          .map((dentist) =>
-              DropdownMenuItem(value: dentist, child: Text(dentist.fullName)))
+      dropdownItems = dentists
+          .map((dentist) => DropdownMenuItem(
+              value: dentist,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 87.0),
+                child: Text(
+                  dentist.fullName,
+                  textAlign: TextAlign.start,
+                ),
+              )))
           .toList();
+      return dropdownItems;
     }
     return [];
   }
 
   Future<List<Dentist>> getRecommendedDentistAsync({int id = 1}) async {
-    return await recommendationService.getMultipleById(
-      id,
-    );
+    if (_selectedDentistId != id) {
+      recommendedDentists = await recommendationService.getMultipleById(
+        id,
+      );
+      _selectedDentistId = id;
+      return recommendedDentists;
+    }
+    return Future.value(recommendedDentists);
+  }
+
+  Future<List<Dentist>> getOtherDentistAsync({int id = 1}) async {
+    if (dentists.isEmpty) {
+      _dentist = await getDentistsAsync();
+      notifyListeners();
+    }
+    return dentists
+        .where((element) => !recommendedDentists.contains(element))
+        .toList();
   }
 }

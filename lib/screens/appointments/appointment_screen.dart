@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:edental/models/dentist.dart';
 import 'package:edental/providers/appointmentProvider.dart';
 import 'package:edental/screens/appointments/dentist_recommendation.dart';
+import 'package:edental/screens/settings/widgets/appointment_timeCounter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/appointment.dart';
+import '../../providers/auth.dart';
 import '../../providers/dentist.dart';
 
 class AppointmentScreen extends StatefulWidget {
@@ -56,12 +61,16 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return dateRange;
   }
 
+  bool isDentistChanged = false;
+  int? previousDentistId = null;
+
   @override
   Widget build(BuildContext context) {
-    // final appointments = Provider.of<AppointmentProvider>(context);
-    final dentists = Provider.of<DentistProvider>(context, listen: false);
+    final appointments = Provider.of<AppointmentProvider>(context);
+    final dentists = Provider.of<DentistProvider>(context);
     final dentistList = dentists.getDentists();
     final deviceSize = MediaQuery.of(context).size;
+    final authProvider = Provider.of<Auth>(context);
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -70,10 +79,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           ),
         ),
         body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const AppointmentTimeCounter(),
               Consumer<AppointmentProvider>(
                 builder: (context, appointments, child) => Container(
                   child: Column(children: [
@@ -94,11 +105,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                     ),
                                     icon: const Icon(Icons.keyboard_arrow_down),
                                     items: dentists.getDentistsDropdown(),
-                                    onChanged: (val) {
+                                    onChanged: (val) async {
                                       setState(() {
                                         selectedDentist = val;
                                       });
-                                      appointments
+                                      await appointments
                                           .setDentistAppointments(val.id);
                                     });
                               },
@@ -114,10 +125,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                 appointments.setWeekDaysFromRange(value);
                               }
                             }),
-                            child: Consumer<AppointmentProvider>(
-                              builder: (context, value, child) => Text(
-                                  '${DateFormat('dd.MM.yyyy').format(value.firstDayOfWeek)}-${DateFormat('dd.MM.yyyy').format(value.lastDayOfWeek)}'),
-                            ),
+                            child: Text(
+                                '${DateFormat('dd.MM.yyyy').format(appointments.firstDayOfWeek)}-${DateFormat('dd.MM.yyyy').format(appointments.lastDayOfWeek)}'),
                           )
                         ]),
                     SizedBox(
@@ -126,19 +135,37 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: weekDays.map((e) => Text(e)).toList())),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children:
+                            appointments.appointmentItems.entries.map((e) {
+                          return Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: e.value);
+                        }).toList()),
                     FutureBuilder(
-                      future: appointments.calculateAppointmentsForWeek(),
+                      future: dentists.getRecommendedDentistAsync(
+                          id: selectedDentist?.id ?? 1),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          List<Widget>? appointments =
-                              snapshot.data?.entries.map((e) {
-                            return Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: e.value);
-                          }).toList();
-                          return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: appointments ?? []);
+                          return Recommendations(
+                              snapshot.data ?? [], "Recommended dentists");
+                        }
+                        if (snapshot.hasError) {
+                          return const Text('Error has occurred');
+                        }
+                        return const CircularProgressIndicator();
+                      },
+                    ),
+                    FutureBuilder(
+                      future: dentists.getOtherDentistAsync(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Recommendations(
+                              snapshot.data ?? [], 'Other dentists');
+                        }
+                        if (snapshot.hasError) {
+                          return const Text('Error has occurred');
                         }
                         return const CircularProgressIndicator();
                       },
@@ -146,18 +173,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ]),
                 ),
               ),
-              FutureBuilder(
-                future: dentists.getRecommendedDentistAsync(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Recommendations(snapshot.data ?? []);
-                  }
-                  if (snapshot.hasError) {
-                    return const Text('Error has occurred');
-                  }
-                  return const CircularProgressIndicator();
-                },
-              )
             ],
           ),
         ));

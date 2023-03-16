@@ -1,8 +1,6 @@
-// napravit account screen tab
-// unutar kojeg treba imati koristnik pregled slike profila
-// mogućnost promjene informacija (ime,prezime itd.)
-// napraviti 2 slidebara kojim bi uključilo/isključilo - NAPOMENA- ovo još nije sigurno hoće li se praviti ali bi bio dobar feature
-// napomena za nadolezeći termnin i za kontorlu nakon 2 mjeseca
+import 'dart:typed_data';
+
+import 'package:edental/providers/authService.dart';
 import 'package:edental/screens/settings/screens/arrangements_tile.dart';
 import 'package:edental/screens/settings/screens/notification_tile.dart';
 import 'package:edental/screens/settings/screens/profile_tile.dart';
@@ -16,6 +14,11 @@ import 'package:edental/screens/settings/widgets/uneditable_photo.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:edental/models/user.dart';
+import 'package:provider/provider.dart';
+
+import '../../../providers/auth.dart';
+import '../../auth/auth_screen.dart';
+import '../widgets/editable_photo.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -25,8 +28,15 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  setImageFunction() {}
   @override
   Widget build(BuildContext context) {
+    Uint8List? _image = null;
+    void setImageFunction(Uint8List image) {
+      _image = image;
+    }
+
+    final authProvider = Provider.of<Auth>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -38,23 +48,30 @@ class _AccountScreenState extends State<AccountScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const UneditableProfilePhoto(),
+          UneditableProfilePhoto(),
           SettingsTile(
-              title: 'Your appointments',
-              icon: Icons.lock_clock,
-              destination: AddArrangementScreen()),
-          const SettingsTile(
-              title: 'Profile', icon: Icons.person, destination: ProfileTile()),
-          const SettingsTile(
+              title: 'Profile',
+              icon: Icons.person,
+              destination: ProfileTile(user: authProvider.user)),
+          SettingsTile(
               title: 'Notifications',
               icon: Icons.notifications,
-              destination: NotificationTile()),
+              destination: NotificationTile(
+                  authProvider.isAuthenticated ? authProvider.user! : null)),
           SettingsTile(
-              title: 'Help', icon: Icons.book, destination: HelpTile()),
-          const SettingsTile(
+            title: 'Help',
+            icon: Icons.book,
+            destination: HelpTile(),
+          ),
+          SettingsTile(
               title: 'About us', icon: Icons.book, destination: AboutTile()),
-          const SettingsTile(
-              title: 'Log out', icon: Icons.logout, destination: ProfileTile()),
+          SettingsTile(
+            title: 'Log out',
+            icon: Icons.logout,
+            destination: AuthScreen(),
+            navigateToNewPage: false,
+            functionToExecute: () => authProvider.logout(),
+          ),
         ],
       ),
     );

@@ -16,6 +16,9 @@ class Dentist {
   bool active;
   String fullName;
 
+  @override
+  bool operator ==(other) => other is Dentist && id == other.id;
+
   Dentist(
     this.id,
     this.firstName,

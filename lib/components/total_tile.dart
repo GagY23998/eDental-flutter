@@ -1,11 +1,15 @@
-import 'package:edental/components/treatment_tile.dart';
+import 'dart:math';
+
+import 'package:edental/components/payment_tile.dart';
 import 'package:flutter/material.dart';
 
+import '../models/payment.dart';
+
 class TotalTile extends StatefulWidget {
-  TotalTile({super.key});
-  List<TreatmentTile> paidReceipts = [];
-  List<TreatmentTile> unpaidReceipts = [];
-  List<TreatmentTile> totalReceipts = [];
+  TotalTile(this.paidReceipts, {super.key});
+  List<Payment> paidReceipts = [];
+  List<PaymentTile> unpaidReceipts = [];
+  List<PaymentTile> totalReceipts = [];
 
   @override
   State<TotalTile> createState() => _TotalTileState();
@@ -14,25 +18,18 @@ class TotalTile extends StatefulWidget {
 class _TotalTileState extends State<TotalTile> {
   @override
   Widget build(BuildContext context) {
+    final totalAmount = widget.paidReceipts
+        .map((x) => x.amount)
+        .reduce((value, element) => value + element);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
       children: [
         Column(
           children: [
-            Text('Paid Receipts'),
-            SizedBox(height: 8),
-          ],
-        ),
-        Column(
-          children: [
-            Text('Unpaid Receipts'),
-            SizedBox(height: 8),
-          ],
-        ),
-        Column(
-          children: [
-            Text('Total Receipts'),
-            SizedBox(height: 8),
+            const Text('Paid Receipts'),
+            const SizedBox(height: 8),
+            Text('$totalAmount \$')
           ],
         ),
       ],

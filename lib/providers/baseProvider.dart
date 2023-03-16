@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:flutter/foundation.dart';
@@ -48,12 +49,12 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
   }
 
   @override
-  Future<List<T>> get(searchRequest, {path}) async {
+  Future<List<T>> get(searchRequest, {path = ''}) async {
     uri = Uri.parse('$_url/$_apiName$path');
-    final result = await http
-        .post(uri, headers: headers, body: searchRequest)
-        .then((value) => value.body as List<T>);
-    return result;
+    final result = await http.post(uri,
+        headers: headers, body: JsonMapper.serialize(searchRequest));
+    final deserializedResult = JsonMapper.deserialize<List<T>>(result.body);
+    return deserializedResult ?? [];
   }
 
   @override
@@ -79,6 +80,15 @@ class BaseProvider<T, Srequest> extends ChangeNotifier
         headers: headers, body: JsonMapper.serialize(request));
     final deserializedResult = JsonMapper.deserialize<List<T>>(result.body);
     return deserializedResult ?? [];
+  }
+
+  FutureOr<T?> update(int id, T request, {path = ''}) async {
+    uri = Uri.parse('$_url/$_apiName$path/$id');
+    final serializedRequest = JsonMapper.serialize(request);
+    final result =
+        await http.put(uri, headers: headers, body: serializedRequest);
+    final deserializedResult = JsonMapper.deserialize<T>(result.body);
+    return deserializedResult;
   }
 
   @override

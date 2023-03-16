@@ -28,6 +28,6 @@ class AuthService extends BaseProvider<UserLogin, Object> {
 }
 
 class UserService extends BaseProvider<User, Object> {
-  UserService({apiName = 'user', username = '', password = ''})
+  UserService({apiName = 'users', username = '', password = ''})
       : super(apiName, username, password);
 }

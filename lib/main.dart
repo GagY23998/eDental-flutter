@@ -3,12 +3,17 @@ import 'package:edental/helpers/navigation_routes.dart';
 import 'package:edental/models/theme.dart';
 import 'package:edental/providers/appointmentProvider.dart';
 import 'package:edental/providers/auth.dart';
+import 'package:edental/providers/authService.dart';
 import 'package:edental/providers/dentist.dart';
+import 'package:edental/providers/paymentService.dart';
+import 'package:edental/providers/ratingService.dart';
 import 'package:edental/providers/treatmentProvider.dart';
+import 'package:edental/providers/userProvider.dart';
 import 'package:edental/screens/auth/auth_screen.dart';
 import 'package:edental/screens/tab_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:provider/provider.dart';
 import 'package:dart_json_mapper/dart_json_mapper.dart'
     show JsonMapper, jsonSerializable, JsonProperty;
@@ -26,6 +31,7 @@ class MyHttpOverrides extends HttpOverrides {
 
 Future<void> main() async {
   await dotenv.load();
+  Stripe.publishableKey = dotenv.env['PUBLISHABLE_KEY']!;
   HttpOverrides.global =
       MyHttpOverrides(); // if using flutter in web, comment this line
   initializeJsonMapper();
@@ -42,6 +48,19 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: Auth()),
+          ChangeNotifierProxyProvider<Auth, RatingService>(
+            create: (context) => RatingService(),
+            update: (context, value, previous) => RatingService(
+                username: value.user != null ? value.user!.username : '',
+                password: value.user != null ? value.user!.password : ''),
+          ),
+          ChangeNotifierProxyProvider<Auth, UserService>(
+            create: (ctx) => UserService(),
+            update: (context, value, previous) => UserService(
+              username: value.user != null ? value.user!.username : '',
+              password: value.user != null ? value.user!.password : '',
+            ),
+          ),
           ChangeNotifierProxyProvider<Auth, TreatmentProvider>(
             create: (context) => TreatmentProvider('', ''),
             update: (context, value, previous) =>
@@ -54,7 +73,13 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProxyProvider<Auth, AppointmentProvider>(
               create: (_) => AppointmentProvider(null),
               update: (_, value, appointments) =>
-                  AppointmentProvider(value.user))
+                  AppointmentProvider(value.user)),
+          ChangeNotifierProxyProvider<Auth, PaymentService>(
+              create: (_) => PaymentService(userId: 0),
+              update: (_, value, appointments) => PaymentService(
+                  userId: value.user?.id ?? 0,
+                  username: value.user?.username,
+                  password: value.user?.password))
         ],
         child: Consumer<Auth>(
             builder: ((context, value, child) => MaterialApp(

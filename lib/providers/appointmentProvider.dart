@@ -14,7 +14,14 @@ class AppointmentProvider extends ChangeNotifier {
   late User _user;
   bool isInitialized = false;
   int? treatmentId;
-  int? dentistId;
+  int? selectedDentistId;
+  Appointment? upcomingAppointment;
+  Map<int, List<AppointmentItem>> _appointmentItems = {};
+  Map<int, List<AppointmentItem>> get appointmentItems =>
+      _appointmentItems.isNotEmpty
+          ? {..._appointmentItems}
+          : getAppointmentItems();
+
   AppointmentService appointmentService = AppointmentService();
   AppointmentProvider(user) {
     if (user != null) {
@@ -34,10 +41,45 @@ class AppointmentProvider extends ChangeNotifier {
   Future<List<Appointment>> initializeValues() async {
     if (_user.id != 0) {
       calculateFirstAndLastDayOfCurrentWeek();
-      _appointments = await fetchAppointmentsForUser();
+      _appointments =
+          await fetchAppointmentsForUser(dentistId: selectedDentistId);
+      // await findUpcomingAppointment();
+      _appointmentItems = getAppointmentItems();
       isInitialized = true;
+      notifyListeners();
     }
     return appointments;
+  }
+
+  Future<Appointment?> findUpcomingAppointment() async {
+    AppointmentSearchRequest searchRequest = AppointmentSearchRequest();
+    searchRequest.userId = _user.id;
+    List<models.Appointment> upcomingAppointments =
+        await appointmentService.find(searchRequest, path: '/filtering');
+    if (!isInitialized) {
+      calculateFirstAndLastDayOfCurrentWeek();
+    }
+    upcomingAppointment = upcomingAppointments
+        .where((element) =>
+            element.userId == _user.id && element.start.isAfter(DateTime.now()))
+        .sortedBy((element) => (element.start))
+        .firstOrNull;
+    return upcomingAppointment;
+  }
+
+  Future<Appointment?> checkExistingAppointment(
+      int dentistId, DateTime start, DateTime end) async {
+    AppointmentSearchRequest searchRequest = AppointmentSearchRequest();
+    // searchRequest.userId = _user.id;
+    // gotta check communication between the 2 notiifers
+    searchRequest.dentistId = dentistId; //  na osnovu userId i dentista
+    // pokupiti sve appointmente
+    searchRequest.start = start;
+    searchRequest.end = end;
+    List<models.Appointment> foundAppointments =
+        await appointmentService.find(searchRequest, path: '/filtering');
+    if (foundAppointments.isEmpty) return null;
+    return foundAppointments.first;
   }
 
   Future<Appointment> createAppointment(Appointment? newAppointment) async {
@@ -45,6 +87,7 @@ class AppointmentProvider extends ChangeNotifier {
       final result = await appointmentService.create(newAppointment);
       if (result != null) {
         _appointments.add(result);
+        _appointmentItems = getAppointmentItems();
         notifyListeners();
       }
 
@@ -78,8 +121,10 @@ class AppointmentProvider extends ChangeNotifier {
     return appointments;
   }
 
-  void setDentistAppointments(int id) {
-    dentistId = id;
+  Future<void> setDentistAppointments(int id) async {
+    selectedDentistId = id;
+    isInitialized = false;
+    _appointmentItems = await calculateAppointmentsForWeek(selectedDentistId);
     notifyListeners();
   }
 
@@ -117,10 +162,15 @@ class AppointmentProvider extends ChangeNotifier {
     return appointmentsForDay;
   }
 
-  Future<Map<int, List<AppointmentItem>>> calculateAppointmentsForWeek() async {
+  Future<Map<int, List<AppointmentItem>>> calculateAppointmentsForWeek(
+      int? dentistId) async {
     if (!isInitialized) {
       await initializeValues();
     }
+    return getAppointmentItems();
+  }
+
+  Map<int, List<AppointmentItem>> getAppointmentItems() {
     Map<int, List<AppointmentItem>> items = {};
     for (int i = 1; i <= 7; i++) {
       items.putIfAbsent(i, () => setAppointmentItemsForDay(appointments, i));
@@ -131,7 +181,6 @@ class AppointmentProvider extends ChangeNotifier {
   Future<void> setWeekDaysFromRange(DateTimeRange dateTimeRange) async {
     firstDayOfWeek = dateTimeRange.start;
     lastDayOfWeek = dateTimeRange.end;
-    await fetchAppointmentsForUser();
-    notifyListeners();
+    await fetchAppointmentsForUser(dentistId: selectedDentistId);
   }
 }

@@ -90,8 +90,15 @@ class _AuthLoginState extends State<AuthLogin> {
                           borderRadius: BorderRadius.circular(20.0),
                         ),
                       ),
-                      onPressed: () =>
-                          value.authenticate(_username.text, _password.text),
+                      onPressed: () async {
+                        final result = await value.authenticate(
+                            _username.text, _password.text);
+                        if (result == false) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Could not authenticate')));
+                        }
+                      },
                       child: const Text('Login')),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25),

@@ -13,10 +13,14 @@ class AuthService extends BaseProvider<UserLogin, Object> {
       : super(apiName, username, password);
 
   Future<User?> Login(UserLogin userLogin) async {
-    String? apiUrl = dotenv.env['API_URL'];
-    Response res = await http.post(Uri.parse('$apiUrl/auth/login'),
-        headers: super.headers, body: JsonMapper.serialize(userLogin));
-    return JsonMapper.deserialize<User>(res.body);
+    try {
+      String? apiUrl = dotenv.env['API_URL'];
+      Response res = await http.post(Uri.parse('$apiUrl/auth/login'),
+          headers: super.headers, body: JsonMapper.serialize(userLogin));
+      return JsonMapper.deserialize<User>(res.body);
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<User?> Register(User userLogin) async {

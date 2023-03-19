@@ -244,15 +244,18 @@ class _ProfileTileState extends State<ProfileTile> {
                         child: const Text('Dispose'),
                       ),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           User userToRegisterOrUpdate = User(
+                              id: 0,
                               address: _addressController.text,
                               firstName: _firstNameController.text,
                               lastName: _lastNameController.text,
                               phone: _phoneController.text,
                               email: _emailController.text,
-                              role: _role,
-                              gender: _gender,
+                              role: Role.values
+                                  .firstWhere((element) => element == _role),
+                              gender: Gender.values
+                                  .firstWhere((element) => element == _gender),
                               image: _image,
                               password: _passwordController.text,
                               passwordConfirm: _passwordController.text,
@@ -268,8 +271,11 @@ class _ProfileTileState extends State<ProfileTile> {
                                       content: Text('Successufully updated')));
                             }
                           } else {
-                            auth.signUp(_firstName, _lastName, _username,
-                                _email, _password, _password);
+                            bool result =
+                                await auth.signUp(userToRegisterOrUpdate);
+                            if (result != null) {
+                              Navigator.of(context).pop();
+                            }
                           }
                         },
                         child: const Text('Accept'),

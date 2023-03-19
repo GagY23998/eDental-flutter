@@ -199,6 +199,14 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                   ? ElevatedButton(
                       onPressed: isSaveButtonEnabled
                           ? () async {
+                              if (widget.appointmentItem.appointmentHour
+                                  .isBefore(DateTime.now())) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Appointment can\'t be made in past')));
+                                return;
+                              }
                               final existingAppointment =
                                   await appointments.checkExistingAppointment(
                                       selectedDentistId ?? _selectedDentist!.id,

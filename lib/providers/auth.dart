@@ -8,31 +8,21 @@ class Auth extends ChangeNotifier {
   AuthService authService = AuthService();
   User? user;
   bool get isAuthenticated => user != null;
-  Future<void> authenticate(String userName, String password) async {
+  Future<bool> authenticate(String userName, String password) async {
     UserLogin userLogin = UserLogin(userName, password);
     User? loggedUser = await authService.Login(userLogin);
-    user = loggedUser;
-    user?.password = password;
-    notifyListeners();
+    if (loggedUser != null) {
+      user = loggedUser;
+      user?.password = password;
+      notifyListeners();
+    }
+    return loggedUser != null;
   }
 
-  Future<void> signUp(String firstName, String lastName, String userName,
-      String emailAddress, String password, String confirmPassword) async {
-    if (password != confirmPassword) {
-      return;
-    }
-    User newUser = User();
-    newUser.firstName = firstName;
-    newUser.lastName = lastName;
-    newUser.username = userName;
-    newUser.password = password;
-    newUser.passwordConfirm = confirmPassword;
-    newUser.email = emailAddress;
+  Future<bool> signUp(User newUser) async {
     User? confirmedUser = await authService.Register(newUser);
-    if (confirmedUser != null) {
-      await authenticate(confirmedUser.username, confirmedUser.password ?? '');
-    }
     notifyListeners();
+    return confirmedUser != null;
   }
 
   Future<void> logout() async {
